@@ -2,7 +2,7 @@ package com.example.tasklist.data
 
 data class Category(
     val id: Int,
-    val name: String
+    var name: String
 ) {
     companion object {
         const val TABLE_NAME = "categories"
