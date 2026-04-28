@@ -18,6 +18,14 @@ class CategoryDAO(val context: Context) {
         db.close()
     }
 
+    fun save(category: Category) {
+        if (category.id != -1) {
+            update(category)
+        } else {
+            insert(category)
+        }
+    }
+
     fun insert(category: Category) {
         // Gets the data repository in write mode
         open()
@@ -93,6 +101,8 @@ class CategoryDAO(val context: Context) {
                 result = Category(itemId, title)
             }
 
+            cursor.close()
+
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -124,6 +134,8 @@ class CategoryDAO(val context: Context) {
                 val category = Category(itemId, title)
                 resultList.add(category)
             }
+
+            cursor.close()
 
         } catch (e: Exception) {
             e.printStackTrace()
