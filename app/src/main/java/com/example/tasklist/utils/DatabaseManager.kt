@@ -4,10 +4,13 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.tasklist.data.Category
+import com.example.tasklist.data.Task
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("PRAGMA foreign_keys = ON;")
         db.execSQL(Category.SQL_CREATE)
+        db.execSQL(Task.SQL_CREATE)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -16,6 +19,7 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     fun onDestroy(db: SQLiteDatabase) {
+        db.execSQL(Task.SQL_DELETE)
         db.execSQL(Category.SQL_DELETE)
     }
 

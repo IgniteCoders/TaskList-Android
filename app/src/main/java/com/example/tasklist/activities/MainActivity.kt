@@ -1,5 +1,6 @@
 package com.example.tasklist.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -89,7 +90,9 @@ class MainActivity : AppCompatActivity() {
 
     fun showCategory(position: Int) {
         val category = categoryList[position]
-        Toast.makeText(this, category.name, Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, TaskListActivity::class.java)
+        intent.putExtra(TaskListActivity.EXTRA_CATEGORY_ID, category.id)
+        startActivity(intent)
     }
 
     fun editCategory(position: Int) {

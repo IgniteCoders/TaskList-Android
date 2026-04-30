@@ -25,7 +25,7 @@ class CategoryAdapter(
         holder.itemView.setOnClickListener {
             onClick(position)
         }
-        holder.itemView.setOnClickListener {
+        holder.binding.editButton.setOnClickListener {
             onEdit(position)
         }
         holder.binding.deleteButton.setOnClickListener {

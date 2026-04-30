@@ -2,6 +2,7 @@ package com.example.tasklist.data
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.example.tasklist.utils.DatabaseManager
@@ -26,13 +27,24 @@ class CategoryDAO(val context: Context) {
         }
     }
 
+    fun getContentValues(category: Category): ContentValues {
+        val values = ContentValues()
+        values.put(Category.COLUMN_NAME, category.name)
+        return values
+    }
+
+    fun cursorToEntity(cursor: Cursor): Category {
+        val itemId = cursor.getInt(cursor.getColumnIndexOrThrow(Category.COLUMN_ID))
+        val title = cursor.getString(cursor.getColumnIndexOrThrow(Category.COLUMN_NAME))
+        return Category(itemId, title)
+    }
+
     fun insert(category: Category) {
         // Gets the data repository in write mode
         open()
 
         // Create a new map of values, where column names are the keys
-        val values = ContentValues()
-        values.put(Category.COLUMN_NAME, category.name)
+        val values = getContentValues(category)
 
         try {
             // Insert the new row, returning the primary key value of the new row
@@ -50,8 +62,7 @@ class CategoryDAO(val context: Context) {
         open()
 
         // Create a new map of values, where column names are the keys
-        val values = ContentValues()
-        values.put(Category.COLUMN_NAME, category.name)
+        val values = getContentValues(category)
 
         try {
             // Update the row, returning the count of affected rows
@@ -70,7 +81,22 @@ class CategoryDAO(val context: Context) {
         try {
             // Issue SQL statement.
             val deletedRows = db.delete(Category.TABLE_NAME, "${Category.COLUMN_ID} = ${category.id}", null)
-            Log.i("DATABASE", "Deleted $deletedRows rows with id ${category.id} in table ${Category.TABLE_NAME}")
+            Log.i("DATABASE", "Deleted $deletedRows rows with id ${category.id} from table ${Category.TABLE_NAME}")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            close()
+        }
+
+    }
+
+    fun deleteAll() {
+        open()
+
+        try {
+            // Issue SQL statement.
+            val deletedRows = db.delete(Category.TABLE_NAME, null, null)
+            Log.i("DATABASE", "Deleted $deletedRows rows from table ${Category.TABLE_NAME}")
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
@@ -96,9 +122,7 @@ class CategoryDAO(val context: Context) {
             )
 
             if (cursor.moveToNext()) {
-                val itemId = cursor.getInt(cursor.getColumnIndexOrThrow(Category.COLUMN_ID))
-                val title = cursor.getString(cursor.getColumnIndexOrThrow(Category.COLUMN_NAME))
-                result = Category(itemId, title)
+                result = cursorToEntity(cursor)
             }
 
             cursor.close()
@@ -129,9 +153,7 @@ class CategoryDAO(val context: Context) {
             )
 
             while (cursor.moveToNext()) {
-                val itemId = cursor.getInt(cursor.getColumnIndexOrThrow(Category.COLUMN_ID))
-                val title = cursor.getString(cursor.getColumnIndexOrThrow(Category.COLUMN_NAME))
-                val category = Category(itemId, title)
+                val category = cursorToEntity(cursor)
                 resultList.add(category)
             }
 

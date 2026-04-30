@@ -10,10 +10,10 @@ data class Category(
         const val COLUMN_NAME = "name"
 
         const val SQL_CREATE =
-            "CREATE TABLE ${TABLE_NAME} (" +
-                    "${COLUMN_ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "${COLUMN_NAME} TEXT)"
+            "CREATE TABLE $TABLE_NAME (" +
+                    "$COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "$COLUMN_NAME TEXT)"
 
-        const val SQL_DELETE = "DROP TABLE IF EXISTS ${TABLE_NAME}"
+        const val SQL_DELETE = "DROP TABLE IF EXISTS $TABLE_NAME"
     }
 }
