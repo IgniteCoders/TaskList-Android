@@ -141,7 +141,7 @@ class TaskDAO(val context: Context) {
         return result
     }
 
-    fun getAll() : List<Task> {
+    fun getAllBy(where: String?) : List<Task> {
         open()
 
         val resultList: MutableList<Task> = mutableListOf()
@@ -150,11 +150,11 @@ class TaskDAO(val context: Context) {
             val cursor = db.query(
                 Task.TABLE_NAME,   // The table to query
                 null,             // The array of columns to return (pass null to get all)
-                null,              // The columns for the WHERE clause
+                where,              // The columns for the WHERE clause
                 null,          // The values for the WHERE clause
                 null,                   // don't group the rows
                 null,                   // don't filter by row groups
-                null               // The sort order
+                Task.COLUMN_DONE               // The sort order
             )
 
             while (cursor.moveToNext()) {
@@ -173,35 +173,11 @@ class TaskDAO(val context: Context) {
         return resultList
     }
 
+    fun getAll() : List<Task> {
+        return getAllBy(null)
+    }
+
     fun getAllByCategory(category: Category) : List<Task> {
-        open()
-
-        val resultList: MutableList<Task> = mutableListOf()
-
-        try {
-            val cursor = db.query(
-                Task.TABLE_NAME,   // The table to query
-                null,             // The array of columns to return (pass null to get all)
-                "${Task.COLUMN_CATEGORY_ID} = ${category.id}",              // The columns for the WHERE clause
-                null,          // The values for the WHERE clause
-                null,                   // don't group the rows
-                null,                   // don't filter by row groups
-                null               // The sort order
-            )
-
-            while (cursor.moveToNext()) {
-                val task = cursorToEntity(cursor)
-                resultList.add(task)
-            }
-
-            cursor.close()
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            close()
-        }
-
-        return resultList
+        return getAllBy("${Task.COLUMN_CATEGORY_ID} = ${category.id}")
     }
 }

@@ -7,8 +7,14 @@ import com.example.tasklist.data.Category
 import com.example.tasklist.data.Task
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
-    override fun onCreate(db: SQLiteDatabase) {
+
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        // Necesitamos activar las foreign key en cada conexion con la BD
         db.execSQL("PRAGMA foreign_keys = ON;")
+    }
+
+    override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(Category.SQL_CREATE)
         db.execSQL(Task.SQL_CREATE)
     }
