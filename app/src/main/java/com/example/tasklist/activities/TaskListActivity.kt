@@ -1,6 +1,8 @@
 package com.example.tasklist.activities
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -43,27 +45,46 @@ class TaskListActivity : AppCompatActivity() {
             insets
         }
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         categoryDAO = CategoryDAO(this)
         taskDAO = TaskDAO(this)
 
         val categoryId = intent.getIntExtra(EXTRA_CATEGORY_ID, -1)
         category = categoryDAO.getById(categoryId)
 
-        // Crear tarea de prueba
-        /*val task1 = Task(-1, "Comprar azulejos", false, category!!)
-        val task2 = Task(-1, "Comprar cemento", false, category!!)
-        val task3 = Task(-1, "Comprar clavos", false, category!!)
-        taskDAO.insert(task1)
-        taskDAO.insert(task2)
-        taskDAO.insert(task3)*/
-        // Fin codigo para pruebas
-
-        category?.let {
-            taskList = taskDAO.getAllByCategory(it)
-        }
+        supportActionBar?.title = category?.name
 
         adapter = TaskAdapter(taskList, ::showTask, ::editTask, ::deleteTask)
         binding.recyclerView.adapter = adapter
+
+        binding.addTaskFAB.setOnClickListener {
+            val intent = Intent(this, TaskDetailActivity::class.java)
+            intent.putExtra(TaskDetailActivity.EXTRA_CATEGORY_ID, category?.id ?: -1)
+            startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reloadData()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            android.R.id.home -> {
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    fun reloadData() {
+        category?.let {
+            taskList = taskDAO.getAllByCategory(it)
+        }
+        adapter.updateData(taskList)
     }
 
     fun showTask(position: Int) {
@@ -79,6 +100,10 @@ class TaskListActivity : AppCompatActivity() {
     fun editTask(position: Int) {
         val task = taskList[position]
 
+        val intent = Intent(this, TaskDetailActivity::class.java)
+        intent.putExtra(TaskDetailActivity.EXTRA_CATEGORY_ID, task.category.id)
+        intent.putExtra(TaskDetailActivity.EXTRA_TASK_ID, task.id)
+        startActivity(intent)
     }
 
     fun deleteTask(position: Int) {
