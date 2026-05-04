@@ -93,8 +93,8 @@ class TaskListActivity : AppCompatActivity() {
         task.done = !task.done
         taskDAO.update(task)
 
-        taskList = taskDAO.getAllByCategory(category!!)
-        adapter.updateData(taskList)
+        adapter.notifyItemChanged(position)
+        reloadData()
     }
 
     fun editTask(position: Int) {
@@ -115,8 +115,7 @@ class TaskListActivity : AppCompatActivity() {
             .setMessage("¿Está usted seguro de querer borrar la tarea \"${task.title}\"?")
             .setPositiveButton("Si") { dialog, which ->
                 taskDAO.delete(task)
-                taskList = taskDAO.getAllByCategory(category!!)
-                adapter.updateData(taskList)
+                reloadData()
             }
             .setNegativeButton("Cancelar") { dialog, which ->
 
@@ -126,4 +125,6 @@ class TaskListActivity : AppCompatActivity() {
 
         dialog.show()
     }
+
+
 }

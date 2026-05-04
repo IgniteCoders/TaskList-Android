@@ -2,7 +2,9 @@ package com.example.tasklist.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tasklist.adapters.utils.TaskDiffUtils
 import com.example.tasklist.data.Task
 import com.example.tasklist.databinding.ItemTaskBinding
 
@@ -23,26 +25,28 @@ class TaskAdapter(
         val task = items[position]
         holder.render(task)
         holder.itemView.setOnClickListener {
-            onClick(position)
+            onClick(holder.absoluteAdapterPosition)
         }
         holder.binding.doneCheckBox.setOnCheckedChangeListener { _, _ ->
             if (holder.binding.doneCheckBox.isPressed) {
-                onClick(position)
+                onClick(holder.absoluteAdapterPosition)
             }
         }
         holder.binding.editButton.setOnClickListener {
-            onEdit(position)
+            onEdit(holder.absoluteAdapterPosition)
         }
         holder.binding.deleteButton.setOnClickListener {
-            onDelete(position)
+            onDelete(holder.absoluteAdapterPosition)
         }
     }
 
     override fun getItemCount(): Int = items.size
 
     fun updateData(dataSet: List<Task>) {
+        val diffUtils = TaskDiffUtils(items, dataSet)
+        val diffResult = DiffUtil.calculateDiff(diffUtils)
         items = dataSet
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 }
 
